@@ -54,7 +54,7 @@ func unpackString(_ data: Subdata, count: Int) throws -> (value: String, remaind
 ///
 /// - returns: A subsection of data representing `size` bytes and the not-unpacked remaining data.
 func unpackData(_ data: Subdata, count: Int) throws -> (value: Subdata, remainder: Subdata) {
-    guard count > 0 else {
+    guard count >= 0 else {
         throw MessagePackError.invalidArgument
     }
 
