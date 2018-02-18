@@ -1,14 +1,19 @@
 import Foundation
 
+/// MessagePack specification
+/// https://github.com/msgpack/msgpack/blob/master/spec.md
+
 /// Packs an integer into a byte array.
 ///
 /// - parameter value: The integer to split.
 /// - parameter parts: The number of bytes into which to split.
 ///
 /// - returns: An byte array representation.
-func packInteger(_ value: UInt64, parts: Int) -> Data {
+func packInteger(_ value: UInt64,
+                 parts: Int) -> Data {
     precondition(parts > 0)
-    let bytes = stride(from: (8 * (parts - 1)), through: 0, by: -8).map { shift in
+    let bytes = stride(from: (8 * (parts - 1)),
+                       through: 0, by: -8).map { shift in
         return UInt8(truncatingIfNeeded: value >> UInt64(shift))
     }
     return Data(bytes)

@@ -12,12 +12,10 @@ extension MessagePackValue: ExpressibleByBooleanLiteral {
 
 extension MessagePackValue: ExpressibleByDictionaryLiteral {
     public init(dictionaryLiteral elements: (MessagePackValue, MessagePackValue)...) {
-        var dict = [MessagePackValue: MessagePackValue](minimumCapacity: elements.count)
-        for (key, value) in elements {
-            dict[key] = value
-        }
-
-        self = .map(dict)
+        self = .map(elements.reduce(into: [MessagePackValue: MessagePackValue](minimumCapacity: elements.count)) {
+            let (key, value) = $1
+            $0[key] = value
+        })
     }
 }
 

@@ -98,7 +98,7 @@ class MessagePackEncoderTests : XCTestCase {
     // MARK: - Data Strategy Tests
     
     func testEncodingData() {
-        let data = Data(bytes: [0xDE, 0xAD, 0xBE, 0xEF])
+        let data = Data([0xDE, 0xAD, 0xBE, 0xEF])
         
         _testRoundTrip(of: data)
         _testRoundTrip(of: TopLevelWrapper(data))

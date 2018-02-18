@@ -80,19 +80,32 @@ extension MessagePackValue: Equatable {
 }
 
 extension MessagePackValue: Hashable {
-    public var hashValue: Int {
+    public func hash(into hasher: inout Hasher) {
         switch self {
-        case .nil: return 0
-        case .bool(let value): return value.hashValue
-        case .int(let value): return value.hashValue
-        case .uint(let value): return value.hashValue
-        case .float(let value): return value.hashValue
-        case .double(let value): return value.hashValue
-        case .string(let string): return string.hashValue
-        case .binary(let data): return data.count
-        case .array(let array): return array.count
-        case .map(let dict): return dict.count
-        case .extended(let type, let data): return 31 &* type.hashValue &+ data.count
+        case .nil:
+            return
+        case .bool(let value):
+            hasher.combine(value)
+        case .int(let value):
+            hasher.combine(value)
+        case .uint(let value):
+            hasher.combine(value)
+        case .float(let value):
+            hasher.combine(value)
+        case .double(let value):
+            hasher.combine(value)
+        case .string(let string):
+            hasher.combine(string)
+        case .binary(let data):
+            hasher.combine(data)
+        case .array(let array):
+            hasher.combine(array)
+        case .map(let dict):
+            hasher.combine(dict)
+        case .extended(let type, let data):
+            hasher.combine(31)
+            hasher.combine(type)
+            hasher.combine(data)
         }
     }
 }
@@ -101,4 +114,6 @@ public enum MessagePackError: Error {
     case invalidArgument
     case insufficientData
     case invalidData
+    case unsupportedType
+    case inexact
 }

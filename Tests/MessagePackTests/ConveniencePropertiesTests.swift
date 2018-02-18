@@ -33,20 +33,20 @@ class ConveniencePropertiesTests: XCTestCase {
     }()
 
     func testCount() {
-        XCTAssert(MessagePackValue.array([0]).count == 1)
-        XCTAssert(MessagePackValue.map(["c": "cookie"]).count == 1)
-        XCTAssert(MessagePackValue.nil.count == nil)
+        XCTAssertEqual(try MessagePackValue.array([0]).count(), 1)
+        XCTAssertEqual(try MessagePackValue.map(["c": "cookie"]).count(), 1)
+        XCTAssertThrowsError(try MessagePackValue.nil.count())
     }
 
     func testIndexedSubscript() {
-        XCTAssert(MessagePackValue.array([0])[0] == .uint(0))
-        XCTAssert(MessagePackValue.array([0])[1] == nil)
-        XCTAssert(MessagePackValue.nil[0] == nil)
+        XCTAssertEqual(MessagePackValue.array([0])[0], .uint(0))
+        XCTAssertNil(MessagePackValue.array([0])[1])
+        XCTAssertNil(MessagePackValue.nil[0])
     }
 
     func testKeyedSubscript() {
-        XCTAssert(MessagePackValue.map(["c": "cookie"])["c"] == "cookie")
-        XCTAssert(MessagePackValue.nil["c"] == nil)
+        XCTAssertEqual(MessagePackValue.map(["c": "cookie"])["c"], "cookie")
+        XCTAssertNil(MessagePackValue.nil["c"])
     }
 
     func testIsNil() {
@@ -55,180 +55,157 @@ class ConveniencePropertiesTests: XCTestCase {
     }
 
     func testIntValue() {
-        XCTAssert(MessagePackValue.int(-1).intValue == -1)
-        XCTAssert(MessagePackValue.uint(1).intValue == 1)
-        XCTAssertNil(MessagePackValue.nil.intValue)
+        XCTAssertEqual(try MessagePackValue.int(-1).intValue(), -1)
+        XCTAssertEqual(try MessagePackValue.uint(1).intValue(), 1)
+        XCTAssertThrowsError(try MessagePackValue.nil.intValue())
     }
 
     func testInt8Value() {
-        XCTAssert(MessagePackValue.int(-1).int8Value == -1)
-        XCTAssert(MessagePackValue.int(1).int8Value == 1)
-        XCTAssertNil(MessagePackValue.int(Int64(Int8.min) - 1).int8Value)
-        XCTAssertNil(MessagePackValue.int(Int64(Int8.max) + 1).int8Value)
+        XCTAssertEqual(try MessagePackValue.int(-1).int8Value(), -1)
+        XCTAssertEqual(try MessagePackValue.int(1).int8Value(), 1)
+        XCTAssertThrowsError(try MessagePackValue.int(Int64(Int8.min) - 1).int8Value())
+        XCTAssertThrowsError(try MessagePackValue.int(Int64(Int8.max) + 1).int8Value())
 
-        XCTAssert(MessagePackValue.uint(1).int8Value == 1)
-        XCTAssertNil(MessagePackValue.uint(UInt64(Int8.max) + 1).int8Value)
-        XCTAssertNil(MessagePackValue.nil.int8Value)
+        XCTAssertEqual(try MessagePackValue.uint(1).int8Value(), 1)
+        XCTAssertThrowsError(try MessagePackValue.uint(UInt64(Int8.max) + 1).int8Value())
+        XCTAssertThrowsError(try MessagePackValue.nil.int8Value())
     }
 
     func testInt16Value() {
-        XCTAssert(MessagePackValue.int(-1).int16Value == -1)
-        XCTAssert(MessagePackValue.int(1).int16Value == 1)
-        XCTAssertNil(MessagePackValue.int(Int64(Int16.min) - 1).int16Value)
-        XCTAssertNil(MessagePackValue.int(Int64(Int16.max) + 1).int16Value)
+        XCTAssertEqual(try MessagePackValue.int(-1).int16Value(), -1)
+        XCTAssertEqual(try MessagePackValue.int(1).int16Value(), 1)
+        XCTAssertThrowsError(try MessagePackValue.int(Int64(Int16.min) - 1).int16Value())
+        XCTAssertThrowsError(try MessagePackValue.int(Int64(Int16.max) + 1).int16Value())
 
-        XCTAssert(MessagePackValue.uint(1).int16Value == 1)
-        XCTAssertNil(MessagePackValue.uint(UInt64(Int16.max) + 1).int16Value)
-        XCTAssertNil(MessagePackValue.nil.int16Value)
+        XCTAssertEqual(try MessagePackValue.uint(1).int16Value(), 1)
+        XCTAssertThrowsError(try MessagePackValue.uint(UInt64(Int16.max) + 1).int16Value())
+        XCTAssertThrowsError(try MessagePackValue.nil.int16Value())
     }
 
     func testInt32Value() {
-        XCTAssert(MessagePackValue.int(-1).int32Value == -1)
-        XCTAssert(MessagePackValue.int(1).int32Value == 1)
-        XCTAssertNil(MessagePackValue.int(Int64(Int32.min) - 1).int32Value)
-        XCTAssertNil(MessagePackValue.int(Int64(Int32.max) + 1).int32Value)
+        XCTAssertEqual(try MessagePackValue.int(-1).int32Value(), -1)
+        XCTAssertEqual(try MessagePackValue.int(1).int32Value(), 1)
+        XCTAssertThrowsError(try MessagePackValue.int(Int64(Int32.min) - 1).int32Value())
+        XCTAssertThrowsError(try MessagePackValue.int(Int64(Int32.max) + 1).int32Value())
 
-        XCTAssert(MessagePackValue.uint(1).int32Value == 1)
-        XCTAssertNil(MessagePackValue.uint(UInt64(Int32.max) + 1).int32Value)
-        XCTAssertNil(MessagePackValue.nil.int32Value)
+        XCTAssertEqual(try MessagePackValue.uint(1).int32Value(), 1)
+        XCTAssertThrowsError(try MessagePackValue.uint(UInt64(Int32.max) + 1).int32Value())
+        XCTAssertThrowsError(try MessagePackValue.nil.int32Value())
     }
 
     func testInt64Value() {
-        XCTAssert(MessagePackValue.int(-1).int64Value == -1)
-        XCTAssert(MessagePackValue.int(1).int64Value == 1)
+        XCTAssertEqual(try MessagePackValue.int(-1).int64Value(), -1)
+        XCTAssertEqual(try MessagePackValue.int(1).int64Value(), 1)
 
-        XCTAssert(MessagePackValue.uint(1).int64Value == 1)
-        XCTAssertNil(MessagePackValue.uint(UInt64(Int64.max) + 1).int64Value)
-        XCTAssertNil(MessagePackValue.nil.int64Value)
+        XCTAssertEqual(try MessagePackValue.uint(1).int64Value(), 1)
+        XCTAssertThrowsError(try MessagePackValue.uint(UInt64(Int64.max) + 1).int64Value())
+        XCTAssertThrowsError(try MessagePackValue.nil.int64Value())
     }
 
     func testUIntValue() {
-        XCTAssert(MessagePackValue.uint(1).uintValue == 1)
-
-        XCTAssertNil(MessagePackValue.int(-1).uintValue)
-        XCTAssert(MessagePackValue.int(1).uintValue == 1)
-        XCTAssertNil(MessagePackValue.nil.uintValue)
+        XCTAssertEqual(try MessagePackValue.uint(1).uintValue(), 1)
+        XCTAssertThrowsError(try MessagePackValue.int(-1).uintValue())
+        XCTAssertEqual(try MessagePackValue.int(1).uintValue(), 1)
+        XCTAssertThrowsError(try MessagePackValue.nil.uintValue())
     }
 
     func testUInt8Value() {
-        XCTAssert(MessagePackValue.uint(1).uint8Value == 1)
-        XCTAssertNil(MessagePackValue.uint(UInt64(UInt8.max) + 1).uint8Value)
-
-        XCTAssertNil(MessagePackValue.int(-1).uint8Value)
-        XCTAssert(MessagePackValue.int(1).uint8Value == 1)
-        XCTAssertNil(MessagePackValue.int(Int64(UInt8.max) + 1).uint8Value)
-        XCTAssertNil(MessagePackValue.nil.uint8Value)
+        XCTAssertEqual(try MessagePackValue.uint(1).uint8Value(), 1)
+        XCTAssertThrowsError(try MessagePackValue.uint(UInt64(UInt8.max) + 1).uint8Value())
+        XCTAssertThrowsError(try MessagePackValue.int(-1).uint8Value())
+        XCTAssertEqual(try MessagePackValue.int(1).uint8Value(), 1)
+        XCTAssertThrowsError(try MessagePackValue.int(Int64(UInt8.max) + 1).uint8Value())
+        XCTAssertThrowsError(try MessagePackValue.nil.uint8Value())
     }
 
     func testUInt16Value() {
-        XCTAssert(MessagePackValue.uint(1).uint16Value == 1)
-        XCTAssertNil(MessagePackValue.uint(UInt64(UInt16.max) + 1).uint16Value)
+        XCTAssertEqual(try MessagePackValue.uint(1).uint16Value(), 1)
+        XCTAssertThrowsError(try MessagePackValue.uint(UInt64(UInt16.max) + 1).uint16Value())
 
-        XCTAssertNil(MessagePackValue.int(-1).uint16Value)
-        XCTAssert(MessagePackValue.int(1).uint16Value == 1)
-        XCTAssertNil(MessagePackValue.int(Int64(UInt16.max) + 1).uint16Value)
-        XCTAssertNil(MessagePackValue.nil.uint16Value)
+        XCTAssertThrowsError(try MessagePackValue.int(-1).uint16Value())
+        XCTAssertEqual(try MessagePackValue.int(1).uint16Value(), 1)
+        XCTAssertThrowsError(try MessagePackValue.int(Int64(UInt16.max) + 1).uint16Value())
+        XCTAssertThrowsError(try MessagePackValue.nil.uint16Value())
     }
 
     func testUInt32Value() {
-        XCTAssert(MessagePackValue.uint(1).uint32Value == 1)
-        XCTAssertNil(MessagePackValue.uint(UInt64(UInt32.max) + 1).uint32Value)
-
-        XCTAssertNil(MessagePackValue.int(-1).uint32Value)
-        XCTAssert(MessagePackValue.int(1).uint32Value == 1)
-        XCTAssertNil(MessagePackValue.int(Int64(UInt32.max) + 1).uint32Value)
-        XCTAssertNil(MessagePackValue.nil.uint32Value)
+        XCTAssertEqual(try MessagePackValue.uint(1).uint32Value(), 1)
+        XCTAssertThrowsError(try MessagePackValue.uint(UInt64(UInt32.max) + 1).uint32Value())
+        XCTAssertThrowsError(try MessagePackValue.int(-1).uint32Value())
+        XCTAssertEqual(try MessagePackValue.int(1).uint32Value(), 1)
+        XCTAssertThrowsError(try MessagePackValue.int(Int64(UInt32.max) + 1).uint32Value())
+        XCTAssertThrowsError(try MessagePackValue.nil.uint32Value())
     }
 
     func testUInt64Value() {
-        XCTAssert(MessagePackValue.uint(1).uint64Value == 1)
-
-        XCTAssertNil(MessagePackValue.int(-1).uint64Value)
-        XCTAssert(MessagePackValue.int(1).uint64Value == 1)
-        XCTAssertNil(MessagePackValue.nil.uint8Value)
+        XCTAssertEqual(try MessagePackValue.uint(1).uint64Value(), 1)
+        XCTAssertThrowsError(try MessagePackValue.int(-1).uint64Value())
+        XCTAssertEqual(try MessagePackValue.int(1).uint64Value(), 1)
+        XCTAssertThrowsError(try MessagePackValue.nil.uint64Value())
     }
 
     func testArrayValue() {
-        let arrayValue = MessagePackValue.array([0]).arrayValue
-        XCTAssertNotNil(arrayValue)
-        XCTAssertEqual(arrayValue!, [0])
-        XCTAssert(MessagePackValue.nil.arrayValue == nil)
+        XCTAssertEqual(try MessagePackValue.array([0]).arrayValue(), [0])
+        XCTAssertThrowsError(try MessagePackValue.nil.arrayValue())
     }
 
     func testBoolValue() {
-        XCTAssert(MessagePackValue.bool(true).boolValue == true)
-        XCTAssert(MessagePackValue.bool(false).boolValue == false)
-        XCTAssert(MessagePackValue.nil.boolValue == nil)
+        XCTAssertEqual(try MessagePackValue.bool(true).boolValue(), true)
+        XCTAssertEqual(try MessagePackValue.bool(false).boolValue(), false)
+        XCTAssertThrowsError(try MessagePackValue.nil.boolValue())
     }
 
     func testFloatValue() {
-        XCTAssert(MessagePackValue.nil.floatValue == nil)
-
-        var floatValue = MessagePackValue.float(3.14).floatValue
-        XCTAssertNotNil(floatValue)
-        XCTAssertEqual(floatValue!, 3.14, accuracy: 0.0001)
-
-        floatValue = MessagePackValue.double(3.14).floatValue
-        XCTAssertNil(floatValue)
+        XCTAssertThrowsError(try MessagePackValue.nil.floatValue())
+        XCTAssertEqual(try MessagePackValue.float(3.14).floatValue(), 3.14, accuracy: 0.0001)
+        XCTAssertThrowsError(try MessagePackValue.double(3.14).floatValue())
     }
 
     func testDoubleValue() {
-        XCTAssert(MessagePackValue.nil.doubleValue == nil)
-
-        var doubleValue = MessagePackValue.float(3.14).doubleValue
-        XCTAssertNotNil(doubleValue)
-        XCTAssertEqual(doubleValue!, 3.14, accuracy: 0.0001)
-
-        doubleValue = MessagePackValue.double(3.14).doubleValue
-        XCTAssertNotNil(doubleValue)
-        XCTAssertEqual(doubleValue!, 3.14, accuracy: 0.0001)
+        XCTAssertThrowsError(try MessagePackValue.nil.doubleValue())
+        XCTAssertEqual(try MessagePackValue.float(3.14).doubleValue(), 3.14, accuracy: 0.0001)
+        XCTAssertEqual(try MessagePackValue.double(3.14).doubleValue(), 3.14, accuracy: 0.0001)
     }
 
     func testStringValue() {
-        XCTAssert(MessagePackValue.string("Hello, world!").stringValue == "Hello, world!")
-        XCTAssert(MessagePackValue.nil.stringValue == nil)
+        XCTAssertEqual(try MessagePackValue.string("Hello, world!").stringValue(), "Hello, world!")
+        XCTAssertThrowsError(try MessagePackValue.nil.stringValue())
     }
 
     func testStringValueWithCompatibility() {
-        let stringValue = MessagePackValue.binary(Data([0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x2c, 0x20, 0x77, 0x6f, 0x72, 0x6c, 0x64, 0x21])).stringValue
-        XCTAssertEqual(stringValue, "Hello, world!")
+        XCTAssertEqual(try MessagePackValue.binary(Data([0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x2c, 0x20, 0x77, 0x6f, 0x72, 0x6c, 0x64, 0x21])).stringValue(), "Hello, world!")
     }
 
     func testDataValue() {
-        XCTAssert(MessagePackValue.nil.dataValue == nil)
+        XCTAssertThrowsError(try MessagePackValue.nil.dataValue())
 
-        var dataValue = MessagePackValue.binary(Data([0x00, 0x01, 0x02, 0x03, 0x04])).dataValue
-        XCTAssertEqual(dataValue, Data([0x00, 0x01, 0x02, 0x03, 0x04]))
-
-        dataValue = MessagePackValue.extended(4, Data([0x00, 0x01, 0x02, 0x03, 0x04])).dataValue
-        XCTAssertEqual(dataValue, Data([0x00, 0x01, 0x02, 0x03, 0x04]))
+        let dataValue = Data([0x00, 0x01, 0x02, 0x03, 0x04])
+        XCTAssertEqual(try MessagePackValue.binary(dataValue).dataValue(), dataValue)
+        XCTAssertEqual(try MessagePackValue.extended(4, dataValue).dataValue(), Data([0x00, 0x01, 0x02, 0x03, 0x04]))
     }
 
     func testExtendedValue() {
-        XCTAssert(MessagePackValue.nil.extendedValue == nil)
+        XCTAssertThrowsError(try MessagePackValue.nil.extendedValue())
 
-        let extended = MessagePackValue.extended(4, Data([0x00, 0x01, 0x02, 0x03, 0x04]))
-        let tuple = extended.extendedValue
-        XCTAssertNotNil(tuple)
-
-        let (type, data) = tuple!
-        XCTAssertEqual(type, 4)
-        XCTAssertEqual(data, Data([0x00, 0x01, 0x02, 0x03, 0x04]))
+        let expectedData = Data([0x00, 0x01, 0x02, 0x03, 0x04])
+        do {
+            let (type, data) = try MessagePackValue.extended(4, expectedData).extendedValue()
+            XCTAssertEqual(type, 4)
+            XCTAssertEqual(data, expectedData)
+        } catch {
+            XCTFail()
+        }
     }
 
     func testExtendedType() {
-        XCTAssert(MessagePackValue.nil.extendedType == nil)
+        XCTAssertThrowsError(try MessagePackValue.nil.extendedType())
 
-        let extended = MessagePackValue.extended(4, Data([0x00, 0x01, 0x02, 0x03, 0x04]))
-        let type = extended.extendedType
-        XCTAssertNotNil(type)
-        XCTAssertEqual(type!, 4)
+        let data = Data([0x00, 0x01, 0x02, 0x03, 0x04])
+        XCTAssertEqual(try MessagePackValue.extended(4, data).extendedType(), 4)
     }
 
     func testMapValue() {
-        let dictionaryValue = MessagePackValue.map(["c": "cookie"]).dictionaryValue
-        XCTAssertNotNil(dictionaryValue)
-        XCTAssertEqual(dictionaryValue!, ["c": "cookie"])
-        XCTAssert(MessagePackValue.nil.dictionaryValue == nil)
+        XCTAssertEqual(try MessagePackValue.map(["c": "cookie"]).dictionaryValue(), ["c": "cookie"])
+        XCTAssertThrowsError(try MessagePackValue.nil.dictionaryValue())
     }
 }

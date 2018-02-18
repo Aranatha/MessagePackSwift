@@ -7,7 +7,7 @@ class SubdataTests: XCTestCase {
         return [
             ("testConversationToSubdata", testConversationToSubdata),
             ("testConversationToSubdataWithExplicityIndexes", testConversationToSubdataWithExplicityIndexes),
-            ("testConversationToEmptySubdata", testConversationToEmptySubdata),
+            ("testConversionToEmptySubdata", testConversionToEmptySubdata),
         ]
     }()
 
@@ -32,7 +32,7 @@ class SubdataTests: XCTestCase {
         XCTAssertFalse(subdata.isEmpty)
     }
 
-    func testConversationToEmptySubdata() {
+    func testConversionToEmptySubdata() {
         let data = Data(repeating: 0, count: 0x20)
         let subdata = Subdata(data: data, startIndex: 0x10, endIndex: 0x10)
         XCTAssertEqual(subdata.base, data)
