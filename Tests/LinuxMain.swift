@@ -17,6 +17,7 @@ XCTMain([
     testCase(IntegerTests.allTests),
     testCase(MapTests.allTests),
     testCase(NilTests.allTests),
+    testCase(SizeTests.allTests),
     testCase(SubdataTests.allTests),
     testCase(StringTests.allTests),
     testCase(TrueTests.allTests),
