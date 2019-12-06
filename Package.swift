@@ -4,6 +4,11 @@ import PackageDescription
 
 let package = Package(
     name: "MessagePack",
+    platforms: [
+        .macOS(.v10_15),
+        .iOS(.v12),
+        .watchOS(.v6),
+    ],
     products: [
         .library(
             name: "MessagePack",
