@@ -10,6 +10,8 @@ let package = Package(
         .watchOS(.v6),
     ],
     products: [
+        .executable(name: "pack",
+                    targets: ["pack"]),
         .library(
             name: "MessagePack",
             targets: ["MessagePack"]),
@@ -20,6 +22,9 @@ let package = Package(
         .target(
             name: "MessagePack",
             dependencies: []),
+        .target(
+            name: "pack",
+            dependencies: ["MessagePack"]),
         .testTarget(
             name: "MessagePackTests",
             dependencies: ["MessagePack"]),
