@@ -52,7 +52,6 @@ open class MessagePackEncoder {
 // MARK: _MessagePackEncoder
 
 fileprivate class __MessagePackEncoder: Encoder {
-    
     fileprivate var storage: _MessagePackEncodingStorage
     
     fileprivate let options: MessagePackEncoder._Options
@@ -169,62 +168,62 @@ fileprivate struct _MessagePackKeyedEncodingContainer<K: CodingKey>: KeyedEncodi
     // MARK: - KeyedEncodingContainerProtocol Methods
     
     mutating func encodeNil(forKey key: Key) throws {
-        container[key] = encoder.boxNil()
+        container.set(key: key, value: encoder.boxNil())
     }
     mutating func encode(_ value: Bool, forKey key: Key) throws {
-        container[key] = encoder.box(value)
+        container.set(key: key, value: encoder.box(value))
     }
     mutating func encode(_ value: Int, forKey key: Key) throws {
-        container[key] = encoder.box(value)
+        container.set(key: key, value: encoder.box(value))
     }
     mutating func encode(_ value: Int8, forKey key: Key) throws {
-        container[key] = encoder.box(value)
+        container.set(key: key, value: encoder.box(value))
     }
     mutating func encode(_ value: Int16, forKey key: Key) throws {
-        container[key] = encoder.box(value)
+        container.set(key: key, value: encoder.box(value))
     }
     mutating func encode(_ value: Int32, forKey key: Key) throws {
-        container[key] = encoder.box(value)
+        container.set(key: key, value: encoder.box(value))
     }
     mutating func encode(_ value: Int64, forKey key: Key) throws {
-        container[key] = encoder.box(value)
+        container.set(key: key, value: encoder.box(value))
     }
     mutating func encode(_ value: UInt, forKey key: Key) throws {
-        container[key] = encoder.box(value)
+        container.set(key: key, value: encoder.box(value))
     }
     mutating func encode(_ value: UInt8, forKey key: Key) throws {
-        container[key] = encoder.box(value)
+        container.set(key: key, value: encoder.box(value))
     }
     mutating func encode(_ value: UInt16, forKey key: Key) throws {
-        container[key] = encoder.box(value)
+        container.set(key: key, value: encoder.box(value))
     }
     mutating func encode(_ value: UInt32, forKey key: Key) throws {
-        container[key] = encoder.box(value)
+        container.set(key: key, value: encoder.box(value))
     }
     mutating func encode(_ value: UInt64, forKey key: Key) throws {
-        container[key] = encoder.box(value)
+        container.set(key: key, value: encoder.box(value))
     }
     mutating func encode(_ value: Float, forKey key: Key) throws {
-        container[key] = encoder.box(value)
+        container.set(key: key, value: encoder.box(value))
     }
     mutating func encode(_ value: Double, forKey key: Key) throws {
-        container[key] = encoder.box(value)
+        container.set(key: key, value: encoder.box(value))
     }
     mutating func encode(_ value: String, forKey key: Key) throws {
-        container[key] = encoder.box(value)
+        container.set(key: key, value: encoder.box(value))
     }
 
     mutating func encode<T: Encodable>(_ value: T, forKey key: Key) throws {
         encoder.codingPath.append(key)
         defer { encoder.codingPath.removeLast() }
         
-        container[key] = try encoder.box(value)
+        container.set(key: key, value: try encoder.box(value))
     }
     
     mutating func nestedContainer<NestedKey>(keyedBy keyType: NestedKey.Type,
                                              forKey key: Key) -> KeyedEncodingContainer<NestedKey> {
         let dictionary = _MessagePackDictionaryBox()
-        container[key] = dictionary
+        container.set(key: key, value: dictionary)
         
         codingPath.append(key)
         defer { codingPath.removeLast() }
@@ -237,7 +236,7 @@ fileprivate struct _MessagePackKeyedEncodingContainer<K: CodingKey>: KeyedEncodi
     
     mutating func nestedUnkeyedContainer(forKey key: Key) -> UnkeyedEncodingContainer {
         let array = _MessagePackArrayBox()
-        container[key] = array
+        container.set(key: key, value: array)
         
         codingPath.append(key)
         defer { codingPath.removeLast() }
@@ -364,7 +363,6 @@ fileprivate struct _MessagePackUnkeyedEncodingContainer: UnkeyedEncodingContaine
 }
 
 extension __MessagePackEncoder: SingleValueEncodingContainer {
-    
     fileprivate func assertCanEncodeNewValue() {
         precondition(canEncodeNewValue,
                      "Attempt to encode value through single value container when previously value already encoded.")
@@ -526,7 +524,6 @@ extension __MessagePackEncoder {
 // MARK: _MessagePackReferencingEncoder
 
 fileprivate class _MessagePackReferencingEncoder: __MessagePackEncoder {
-    
     private enum Reference {
         case array(_MessagePackArrayBox, Int)
         case dictionary(_MessagePackDictionaryBox, String)
@@ -583,7 +580,7 @@ fileprivate class _MessagePackReferencingEncoder: __MessagePackEncoder {
             
         case .dictionary(let box,
                          let key):
-            box[key] = value
+            box.set(key: key, value: value)
         }
     }
 }
@@ -653,7 +650,6 @@ open class MessagePackDecoder {
 // MARK: _MessagePackDecoder
 
 fileprivate class _MessagePackDecoder : Decoder {
-    
     fileprivate var storage: _MessagePackDecodingStorage
     
     fileprivate let options: MessagePackDecoder._Options
@@ -724,7 +720,6 @@ fileprivate class _MessagePackDecoder : Decoder {
 // MARK: Decoding Storage
 
 fileprivate struct _MessagePackDecodingStorage {
-    
     private(set) fileprivate var containers: [MessagePackValue] = []
     
     fileprivate init() {}
@@ -1174,7 +1169,6 @@ fileprivate struct _MessagePackKeyedDecodingContainer<K: CodingKey>: KeyedDecodi
 }
 
 fileprivate struct _MessagePackUnkeyedDecodingContainer: UnkeyedDecodingContainer {
-    
     private let decoder: _MessagePackDecoder
     
     private let container: [MessagePackValue]
@@ -1557,7 +1551,6 @@ fileprivate struct _MessagePackUnkeyedDecodingContainer: UnkeyedDecodingContaine
 }
 
 extension _MessagePackDecoder : SingleValueDecodingContainer {
-    
     func decodeNil() -> Bool {
         storage.topContainer.isNil
     }
@@ -1626,7 +1619,6 @@ extension _MessagePackDecoder : SingleValueDecodingContainer {
 // MARK: Concrete Value Representations
 
 extension _MessagePackDecoder {
-    
     fileprivate func unbox(_ value: MessagePackValue,
                            as type: Bool.Type) throws -> Bool? {
         try value.boolValue()
@@ -1818,47 +1810,18 @@ fileprivate final class _MessagePackValueBox: _MessagePackBox {
 }
 
 fileprivate final class _MessagePackDictionaryBox: _MessagePackBox {
-    private var dictionary = NSMutableDictionary()
+    private var dictionary = [MessagePackValue: MessagePackValue]()
     
     var messagePackValue: MessagePackValue {
-        var map = [MessagePackValue: MessagePackValue]()
-        map.reserveCapacity(self.dictionary.count)
-        dictionary.enumerateKeysAndObjects { key, value, _ in
-            map[.string(key as! String)] = (value as! _MessagePackBox).messagePackValue
-        }
-        return .map(map)
+        .map(dictionary)
     }
 
-    subscript(key: String) -> _MessagePackBox? {
-        get {
-            if let value = dictionary.object(forKey: key) {
-                return (value as! _MessagePackBox)
-            }
-            return nil
-        }
-        set {
-            if let newValue = newValue {
-                dictionary.setObject(newValue, forKey: key as NSCopying)
-            } else {
-                dictionary.removeObject(forKey: key as NSCopying)
-            }
-        }
+    func set(key: String, value: _MessagePackBox) {
+        dictionary[.string(key)] = value.messagePackValue
     }
     
-    subscript<K: CodingKey>(key: K) -> _MessagePackBox? {
-        get {
-            if let value = dictionary.object(forKey: key.stringValue) {
-                return (value as! _MessagePackBox)
-            }
-            return nil
-        }
-        set {
-            if let newValue = newValue {
-                dictionary.setObject(newValue, forKey: key.stringValue as NSCopying)
-            } else {
-                dictionary.removeObject(forKey: key.stringValue as NSCopying)
-            }
-        }
+    func set<K: CodingKey>(key: K, value: _MessagePackBox) {
+        dictionary[.string(key.stringValue)] = value.messagePackValue
     }
 }
 
