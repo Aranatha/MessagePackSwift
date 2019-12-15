@@ -1818,29 +1818,46 @@ fileprivate final class _MessagePackValueBox: _MessagePackBox {
 }
 
 fileprivate final class _MessagePackDictionaryBox: _MessagePackBox {
-    private var dictionary: [String: _MessagePackBox] = [:]
+    private var dictionary = NSMutableDictionary()
     
     var messagePackValue: MessagePackValue {
-        .map(dictionary.reduce(into: [MessagePackValue: MessagePackValue](), {
-            $0[.string($1.key)] = $1.value.messagePackValue
-        }))
+        var map = [MessagePackValue: MessagePackValue]()
+        map.reserveCapacity(self.dictionary.count)
+        dictionary.enumerateKeysAndObjects { key, value, _ in
+            map[.string(key as! String)] = (value as! _MessagePackBox).messagePackValue
+        }
+        return .map(map)
     }
 
     subscript(key: String) -> _MessagePackBox? {
         get {
-            dictionary[key]
+            if let value = dictionary.object(forKey: key) {
+                return (value as! _MessagePackBox)
+            }
+            return nil
         }
         set {
-            dictionary[key] = newValue
+            if let newValue = newValue {
+                dictionary.setObject(newValue, forKey: key as NSCopying)
+            } else {
+                dictionary.removeObject(forKey: key as NSCopying)
+            }
         }
     }
     
     subscript<K: CodingKey>(key: K) -> _MessagePackBox? {
         get {
-            dictionary[key.stringValue]
+            if let value = dictionary.object(forKey: key.stringValue) {
+                return (value as! _MessagePackBox)
+            }
+            return nil
         }
         set {
-            dictionary[key.stringValue] = newValue
+            if let newValue = newValue {
+                dictionary.setObject(newValue, forKey: key.stringValue as NSCopying)
+            } else {
+                dictionary.removeObject(forKey: key.stringValue as NSCopying)
+            }
         }
     }
 }
