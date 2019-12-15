@@ -9,8 +9,8 @@ import Foundation
 /// - parameter parts: The number of bytes into which to split.
 ///
 /// - returns: An byte array representation.
-func packInteger(_ value: UInt64,
-                 parts: Int) -> Data {
+private func packInteger(_ value: UInt64,
+                         parts: Int) -> Data {
     assert(parts > 0)
     assert(parts <= 8)
     let bytes = stride(from: (8 * (parts - 1)),
@@ -25,7 +25,7 @@ func packInteger(_ value: UInt64,
 /// - parameter value: The value to encode
 ///
 /// - returns: A MessagePack byte representation.
-func packPositiveInteger(_ value: UInt64) -> Data {
+private func packPositiveInteger(_ value: UInt64) -> Data {
     if value <= 0x7f {
         return Data([UInt8(truncatingIfNeeded: value)])
     } else if value <= 0xff {
@@ -44,7 +44,7 @@ func packPositiveInteger(_ value: UInt64) -> Data {
 /// - parameter value: The value to encode
 ///
 /// - returns: A MessagePack byte representation.
-func packNegativeInteger(_ value: Int64) -> Data {
+private func packNegativeInteger(_ value: Int64) -> Data {
     assert(value < 0)
     if value >= -0x20 {
         return Data([0xe0 + 0x1f & UInt8(truncatingIfNeeded: value)])
