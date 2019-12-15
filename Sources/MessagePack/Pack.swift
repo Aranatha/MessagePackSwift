@@ -11,7 +11,8 @@ import Foundation
 /// - returns: An byte array representation.
 func packInteger(_ value: UInt64,
                  parts: Int) -> Data {
-    precondition(parts > 0)
+    assert(parts > 0)
+    assert(parts <= 8)
     let bytes = stride(from: (8 * (parts - 1)),
                        through: 0, by: -8).map { shift in
         return UInt8(truncatingIfNeeded: value >> UInt64(shift))
@@ -44,7 +45,7 @@ func packPositiveInteger(_ value: UInt64) -> Data {
 ///
 /// - returns: A MessagePack byte representation.
 func packNegativeInteger(_ value: Int64) -> Data {
-    precondition(value < 0)
+    assert(value < 0)
     if value >= -0x20 {
         return Data([0xe0 + 0x1f & UInt8(truncatingIfNeeded: value)])
     } else if value >= -0x7f {
@@ -93,7 +94,7 @@ public func pack(_ value: MessagePackValue) -> Data {
     case .string(let string):
         let utf8 = string.utf8
         let count = UInt32(utf8.count)
-        precondition(count <= 0xffff_ffff as UInt32)
+        assert(count <= 0xffff_ffff as UInt32)
 
         let prefix: Data
         if count <= 0x19 {
@@ -110,7 +111,7 @@ public func pack(_ value: MessagePackValue) -> Data {
 
     case .binary(let data):
         let count = UInt32(data.count)
-        precondition(count <= 0xffff_ffff as UInt32)
+        assert(count <= 0xffff_ffff as UInt32)
 
         let prefix: Data
         if count <= 0xff {
@@ -125,7 +126,7 @@ public func pack(_ value: MessagePackValue) -> Data {
 
     case .array(let array):
         let count = UInt32(array.count)
-        precondition(count <= 0xffff_ffff as UInt32)
+        assert(count <= 0xffff_ffff as UInt32)
 
         let prefix: Data
         if count <= 0xe {
@@ -140,7 +141,7 @@ public func pack(_ value: MessagePackValue) -> Data {
 
     case .map(let dict):
         let count = UInt32(dict.count)
-        precondition(count < 0xffff_ffff)
+        assert(count < 0xffff_ffff)
 
         var prefix: Data
         if count <= 0xe {
@@ -155,7 +156,7 @@ public func pack(_ value: MessagePackValue) -> Data {
 
     case .extended(let type, let data):
         let count = UInt32(data.count)
-        precondition(count <= 0xffff_ffff as UInt32)
+        assert(count <= 0xffff_ffff as UInt32)
 
         let unsignedType = UInt8(bitPattern: type)
         var prefix: Data
