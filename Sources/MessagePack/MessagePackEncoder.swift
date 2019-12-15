@@ -583,7 +583,7 @@ fileprivate class _MessagePackReferencingEncoder: __MessagePackEncoder {
             
         case .dictionary(let box,
                          let key):
-            box.dictionary[key] = value
+            box[key] = value
         }
     }
 }
@@ -1818,7 +1818,7 @@ fileprivate final class _MessagePackValueBox: _MessagePackBox {
 }
 
 fileprivate final class _MessagePackDictionaryBox: _MessagePackBox {
-    var dictionary: [String: _MessagePackBox] = [:]
+    private var dictionary: [String: _MessagePackBox] = [:]
     
     var messagePackValue: MessagePackValue {
         .map(dictionary.reduce(into: [MessagePackValue: MessagePackValue](), {
