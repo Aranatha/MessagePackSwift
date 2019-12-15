@@ -143,16 +143,23 @@ public func pack(_ value: MessagePackValue) -> Data {
         let count = UInt32(dict.count)
         assert(count < 0xffff_ffff)
 
-        var prefix: Data
+        var data = Data()
         if count <= 0xe {
-            prefix = Data([0x80 | UInt8(count)])
+            data.append(Data([0x80 | UInt8(count)]))
         } else if count <= 0xffff {
-            prefix = Data([0xde]) + packInteger(UInt64(count), parts: 2)
+            data.append(Data([0xde]))
+            data.append(packInteger(UInt64(count), parts: 2))
         } else {
-            prefix = Data([0xdf]) + packInteger(UInt64(count), parts: 4)
+            data.append(Data([0xdf]))
+            data.append(packInteger(UInt64(count), parts: 4))
         }
 
-        return prefix + dict.flatMap { [$0, $1] }.flatMap(pack)
+        for (key, value) in dict {
+            data.append(pack(key))
+            data.append(pack(value))
+        }
+
+        return data
 
     case .extended(let type, let data):
         let count = UInt32(data.count)
