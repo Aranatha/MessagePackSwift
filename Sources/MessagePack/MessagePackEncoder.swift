@@ -15,7 +15,6 @@ import Foundation
 // MARK: - MessagePackEncoder
 
 open class MessagePackEncoder {
-    
     open var userInfo: [CodingUserInfoKey: Any] = [:]
     
     fileprivate struct _Options {
@@ -58,9 +57,9 @@ fileprivate class __MessagePackEncoder: Encoder {
     
     fileprivate let options: MessagePackEncoder._Options
     
-    public var codingPath: [CodingKey]
+    var codingPath: [CodingKey]
     
-    public var userInfo: [CodingUserInfoKey: Any] {
+    var userInfo: [CodingUserInfoKey: Any] {
         options.userInfo
     }
     
@@ -75,7 +74,7 @@ fileprivate class __MessagePackEncoder: Encoder {
         return storage.count == codingPath.count
     }
     
-    public func container<Key>(keyedBy: Key.Type) -> KeyedEncodingContainer<Key> {
+    func container<Key>(keyedBy: Key.Type) -> KeyedEncodingContainer<Key> {
         let topContainer: _MessagePackDictionaryBox
         if canEncodeNewValue {
             topContainer = storage.pushKeyedContainer()
@@ -93,7 +92,7 @@ fileprivate class __MessagePackEncoder: Encoder {
         return KeyedEncodingContainer(container)
     }
     
-    public func unkeyedContainer() -> UnkeyedEncodingContainer {
+    func unkeyedContainer() -> UnkeyedEncodingContainer {
         let topContainer: _MessagePackArrayBox
         if canEncodeNewValue {
             topContainer = storage.pushUnkeyedContainer()
@@ -110,7 +109,7 @@ fileprivate class __MessagePackEncoder: Encoder {
                                                     wrapping: topContainer)
     }
     
-    public func singleValueContainer() -> SingleValueEncodingContainer {
+    func singleValueContainer() -> SingleValueEncodingContainer {
         return self
     }
 }
@@ -157,7 +156,7 @@ fileprivate struct _MessagePackKeyedEncodingContainer<K: CodingKey>: KeyedEncodi
     
     private let container: _MessagePackDictionaryBox
     
-    private(set) public var codingPath: [CodingKey]
+    private(set) var codingPath: [CodingKey]
     
     fileprivate init(referencing encoder: __MessagePackEncoder,
                      codingPath: [CodingKey],
@@ -169,61 +168,61 @@ fileprivate struct _MessagePackKeyedEncodingContainer<K: CodingKey>: KeyedEncodi
     
     // MARK: - KeyedEncodingContainerProtocol Methods
     
-    public mutating func encodeNil(forKey key: Key) throws {
+    mutating func encodeNil(forKey key: Key) throws {
         container[key] = encoder.boxNil()
     }
-    public mutating func encode(_ value: Bool, forKey key: Key) throws {
+    mutating func encode(_ value: Bool, forKey key: Key) throws {
         container[key] = encoder.box(value)
     }
-    public mutating func encode(_ value: Int, forKey key: Key) throws {
+    mutating func encode(_ value: Int, forKey key: Key) throws {
         container[key] = encoder.box(value)
     }
-    public mutating func encode(_ value: Int8, forKey key: Key) throws {
+    mutating func encode(_ value: Int8, forKey key: Key) throws {
         container[key] = encoder.box(value)
     }
-    public mutating func encode(_ value: Int16, forKey key: Key) throws {
+    mutating func encode(_ value: Int16, forKey key: Key) throws {
         container[key] = encoder.box(value)
     }
-    public mutating func encode(_ value: Int32, forKey key: Key) throws {
+    mutating func encode(_ value: Int32, forKey key: Key) throws {
         container[key] = encoder.box(value)
     }
-    public mutating func encode(_ value: Int64, forKey key: Key) throws {
+    mutating func encode(_ value: Int64, forKey key: Key) throws {
         container[key] = encoder.box(value)
     }
-    public mutating func encode(_ value: UInt, forKey key: Key) throws {
+    mutating func encode(_ value: UInt, forKey key: Key) throws {
         container[key] = encoder.box(value)
     }
-    public mutating func encode(_ value: UInt8, forKey key: Key) throws {
+    mutating func encode(_ value: UInt8, forKey key: Key) throws {
         container[key] = encoder.box(value)
     }
-    public mutating func encode(_ value: UInt16, forKey key: Key) throws {
+    mutating func encode(_ value: UInt16, forKey key: Key) throws {
         container[key] = encoder.box(value)
     }
-    public mutating func encode(_ value: UInt32, forKey key: Key) throws {
+    mutating func encode(_ value: UInt32, forKey key: Key) throws {
         container[key] = encoder.box(value)
     }
-    public mutating func encode(_ value: UInt64, forKey key: Key) throws {
+    mutating func encode(_ value: UInt64, forKey key: Key) throws {
         container[key] = encoder.box(value)
     }
-    public mutating func encode(_ value: Float, forKey key: Key) throws {
+    mutating func encode(_ value: Float, forKey key: Key) throws {
         container[key] = encoder.box(value)
     }
-    public mutating func encode(_ value: Double, forKey key: Key) throws {
+    mutating func encode(_ value: Double, forKey key: Key) throws {
         container[key] = encoder.box(value)
     }
-    public mutating func encode(_ value: String, forKey key: Key) throws {
+    mutating func encode(_ value: String, forKey key: Key) throws {
         container[key] = encoder.box(value)
     }
 
-    public mutating func encode<T: Encodable>(_ value: T, forKey key: Key) throws {
+    mutating func encode<T: Encodable>(_ value: T, forKey key: Key) throws {
         encoder.codingPath.append(key)
         defer { encoder.codingPath.removeLast() }
         
         container[key] = try encoder.box(value)
     }
     
-    public mutating func nestedContainer<NestedKey>(keyedBy keyType: NestedKey.Type,
-                                                    forKey key: Key) -> KeyedEncodingContainer<NestedKey> {
+    mutating func nestedContainer<NestedKey>(keyedBy keyType: NestedKey.Type,
+                                             forKey key: Key) -> KeyedEncodingContainer<NestedKey> {
         let dictionary = _MessagePackDictionaryBox()
         container[key] = dictionary
         
@@ -236,7 +235,7 @@ fileprivate struct _MessagePackKeyedEncodingContainer<K: CodingKey>: KeyedEncodi
         return KeyedEncodingContainer(container)
     }
     
-    public mutating func nestedUnkeyedContainer(forKey key: Key) -> UnkeyedEncodingContainer {
+    mutating func nestedUnkeyedContainer(forKey key: Key) -> UnkeyedEncodingContainer {
         let array = _MessagePackArrayBox()
         container[key] = array
         
@@ -248,13 +247,13 @@ fileprivate struct _MessagePackKeyedEncodingContainer<K: CodingKey>: KeyedEncodi
                                                     wrapping: array)
     }
     
-    public mutating func superEncoder() -> Encoder {
+    mutating func superEncoder() -> Encoder {
         return _MessagePackReferencingEncoder(referencing: encoder,
                                               at: _MessagePackKey.super,
                                               wrapping: container)
     }
     
-    public mutating func superEncoder(forKey key: Key) -> Encoder {
+    mutating func superEncoder(forKey key: Key) -> Encoder {
         return _MessagePackReferencingEncoder(referencing: encoder,
                                               at: key,
                                               wrapping: container)
@@ -262,14 +261,13 @@ fileprivate struct _MessagePackKeyedEncodingContainer<K: CodingKey>: KeyedEncodi
 }
 
 fileprivate struct _MessagePackUnkeyedEncodingContainer: UnkeyedEncodingContainer {
-    
     private let encoder: __MessagePackEncoder
     
     private let container: _MessagePackArrayBox
     
-    private(set) public var codingPath: [CodingKey]
+    private(set) var codingPath: [CodingKey]
     
-    public var count: Int {
+    var count: Int {
         return container.count
     }
     
@@ -281,60 +279,60 @@ fileprivate struct _MessagePackUnkeyedEncodingContainer: UnkeyedEncodingContaine
         self.container = container
     }
     
-    public mutating func encodeNil() throws {
+    mutating func encodeNil() throws {
         container.append(encoder.boxNil())
     }
-    public mutating func encode(_ value: Bool) throws {
+    mutating func encode(_ value: Bool) throws {
         container.append(encoder.box(value))
     }
-    public mutating func encode(_ value: Int) throws {
+    mutating func encode(_ value: Int) throws {
         container.append(encoder.box(value))
     }
-    public mutating func encode(_ value: Int8) throws {
+    mutating func encode(_ value: Int8) throws {
         container.append(encoder.box(value))
     }
-    public mutating func encode(_ value: Int16) throws {
+    mutating func encode(_ value: Int16) throws {
         container.append(encoder.box(value))
     }
-    public mutating func encode(_ value: Int32) throws {
+    mutating func encode(_ value: Int32) throws {
         container.append(encoder.box(value))
     }
-    public mutating func encode(_ value: Int64) throws {
+    mutating func encode(_ value: Int64) throws {
         container.append(encoder.box(value))
     }
-    public mutating func encode(_ value: UInt) throws {
+    mutating func encode(_ value: UInt) throws {
         container.append(encoder.box(value))
     }
-    public mutating func encode(_ value: UInt8) throws {
+    mutating func encode(_ value: UInt8) throws {
         container.append(encoder.box(value))
     }
-    public mutating func encode(_ value: UInt16) throws {
+    mutating func encode(_ value: UInt16) throws {
         container.append(encoder.box(value))
     }
-    public mutating func encode(_ value: UInt32) throws {
+    mutating func encode(_ value: UInt32) throws {
         container.append(encoder.box(value))
     }
-    public mutating func encode(_ value: UInt64) throws {
+    mutating func encode(_ value: UInt64) throws {
         container.append(encoder.box(value))
     }
-    public mutating func encode(_ value: Float) throws {
+    mutating func encode(_ value: Float) throws {
         container.append(encoder.box(value))
     }
-    public mutating func encode(_ value: Double) throws {
+    mutating func encode(_ value: Double) throws {
         container.append(encoder.box(value))
     }
-    public mutating func encode(_ value: String) throws {
+    mutating func encode(_ value: String) throws {
         container.append(encoder.box(value))
     }
     
-    public mutating func encode<T : Encodable>(_ value: T) throws {
+    mutating func encode<T : Encodable>(_ value: T) throws {
         encoder.codingPath.append(_MessagePackKey(index: count))
         defer { encoder.codingPath.removeLast() }
         
         container.append(try encoder.box(value))
     }
     
-    public mutating func nestedContainer<NestedKey>(keyedBy keyType: NestedKey.Type) -> KeyedEncodingContainer<NestedKey> {
+    mutating func nestedContainer<NestedKey>(keyedBy keyType: NestedKey.Type) -> KeyedEncodingContainer<NestedKey> {
         codingPath.append(_MessagePackKey(index: count))
         defer { codingPath.removeLast() }
         
@@ -347,7 +345,7 @@ fileprivate struct _MessagePackUnkeyedEncodingContainer: UnkeyedEncodingContaine
         return KeyedEncodingContainer(container)
     }
     
-    public mutating func nestedUnkeyedContainer() -> UnkeyedEncodingContainer {
+    mutating func nestedUnkeyedContainer() -> UnkeyedEncodingContainer {
         codingPath.append(_MessagePackKey(index: count))
         defer { codingPath.removeLast() }
         
@@ -358,7 +356,7 @@ fileprivate struct _MessagePackUnkeyedEncodingContainer: UnkeyedEncodingContaine
                                                     wrapping: array)
     }
     
-    public mutating func superEncoder() -> Encoder {
+    mutating func superEncoder() -> Encoder {
         return _MessagePackReferencingEncoder(referencing: encoder,
                                               at: container.array.count,
                                               wrapping: container)
@@ -372,82 +370,82 @@ extension __MessagePackEncoder: SingleValueEncodingContainer {
                      "Attempt to encode value through single value container when previously value already encoded.")
     }
     
-    public func encodeNil() throws {
+    func encodeNil() throws {
         assertCanEncodeNewValue()
         storage.push(container: boxNil())
     }
     
-    public func encode(_ value: Bool) throws {
+    func encode(_ value: Bool) throws {
         assertCanEncodeNewValue()
         storage.push(container: box(value))
     }
     
-    public func encode(_ value: Int) throws {
+    func encode(_ value: Int) throws {
         assertCanEncodeNewValue()
         storage.push(container: box(value))
     }
     
-    public func encode(_ value: Int8) throws {
+    func encode(_ value: Int8) throws {
         assertCanEncodeNewValue()
         storage.push(container: box(value))
     }
     
-    public func encode(_ value: Int16) throws {
+    func encode(_ value: Int16) throws {
         assertCanEncodeNewValue()
         storage.push(container: box(value))
     }
     
-    public func encode(_ value: Int32) throws {
+    func encode(_ value: Int32) throws {
         assertCanEncodeNewValue()
         storage.push(container: box(value))
     }
     
-    public func encode(_ value: Int64) throws {
+    func encode(_ value: Int64) throws {
         assertCanEncodeNewValue()
         storage.push(container: box(value))
     }
     
-    public func encode(_ value: UInt) throws {
+    func encode(_ value: UInt) throws {
         assertCanEncodeNewValue()
         storage.push(container: box(value))
     }
     
-    public func encode(_ value: UInt8) throws {
+    func encode(_ value: UInt8) throws {
         assertCanEncodeNewValue()
         storage.push(container: box(value))
     }
     
-    public func encode(_ value: UInt16) throws {
+    func encode(_ value: UInt16) throws {
         assertCanEncodeNewValue()
         storage.push(container: box(value))
     }
     
-    public func encode(_ value: UInt32) throws {
+    func encode(_ value: UInt32) throws {
         assertCanEncodeNewValue()
         storage.push(container: box(value))
     }
     
-    public func encode(_ value: UInt64) throws {
+    func encode(_ value: UInt64) throws {
         assertCanEncodeNewValue()
         storage.push(container: box(value))
     }
     
-    public func encode(_ value: String) throws {
+    func encode(_ value: String) throws {
         assertCanEncodeNewValue()
         storage.push(container: box(value))
     }
     
-    public func encode(_ value: Float) throws {
+    func encode(_ value: Float) throws {
         assertCanEncodeNewValue()
         storage.push(container: box(value))
     }
     
-    public func encode(_ value: Double) throws {
+    func encode(_ value: Double) throws {
         assertCanEncodeNewValue()
         storage.push(container: box(value))
     }
     
-    public func encode<T: Encodable>(_ value: T) throws {
+    func encode<T: Encodable>(_ value: T) throws {
         assertCanEncodeNewValue()
         try storage.push(container: box(value))
     }
@@ -456,7 +454,6 @@ extension __MessagePackEncoder: SingleValueEncodingContainer {
 // MARK: Concrete Value Representations
 
 extension __MessagePackEncoder {
-    
     fileprivate func boxNil() -> _MessagePackBox {
         return _MessagePackValueBox(MessagePackValue())
     }
@@ -661,9 +658,9 @@ fileprivate class _MessagePackDecoder : Decoder {
     
     fileprivate let options: MessagePackDecoder._Options
     
-    fileprivate(set) public var codingPath: [CodingKey]
+    fileprivate(set) var codingPath: [CodingKey]
     
-    public var userInfo: [CodingUserInfoKey : Any] {
+    var userInfo: [CodingUserInfoKey : Any] {
         return options.userInfo
     }
     
@@ -676,7 +673,7 @@ fileprivate class _MessagePackDecoder : Decoder {
         self.options = options
     }
     
-    public func container<Key>(keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key> {
+    func container<Key>(keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key> {
         let messagePackDictionary: [MessagePackValue : MessagePackValue]
         do {
             messagePackDictionary = try storage.topContainer.dictionaryValue()
@@ -703,7 +700,7 @@ fileprivate class _MessagePackDecoder : Decoder {
         return KeyedDecodingContainer(container)
     }
     
-    public func unkeyedContainer() throws -> UnkeyedDecodingContainer {
+    func unkeyedContainer() throws -> UnkeyedDecodingContainer {
         let array: [MessagePackValue]
         do {
             array = try storage.topContainer.arrayValue()
@@ -719,7 +716,7 @@ fileprivate class _MessagePackDecoder : Decoder {
                                                     wrapping: array)
     }
     
-    public func singleValueContainer() throws -> SingleValueDecodingContainer {
+    func singleValueContainer() throws -> SingleValueDecodingContainer {
         return self
     }
 }
@@ -760,7 +757,7 @@ fileprivate struct _MessagePackKeyedDecodingContainer<K: CodingKey>: KeyedDecodi
     
     private let container: [String: MessagePackValue]
     
-    private(set) public var codingPath: [CodingKey]
+    private(set) var codingPath: [CodingKey]
     
     fileprivate init(referencing decoder: _MessagePackDecoder,
                      wrapping container: [String: MessagePackValue]) {
@@ -769,15 +766,15 @@ fileprivate struct _MessagePackKeyedDecodingContainer<K: CodingKey>: KeyedDecodi
         self.codingPath = decoder.codingPath
     }
     
-    public var allKeys: [Key] {
+    var allKeys: [Key] {
         return container.keys.compactMap { Key(stringValue: $0) }
     }
     
-    public func contains(_ key: Key) -> Bool {
+    func contains(_ key: Key) -> Bool {
         return container[key.stringValue] != nil
     }
     
-    public func decodeNil(forKey key: Key) throws -> Bool {
+    func decodeNil(forKey key: Key) throws -> Bool {
         guard let entry = container[key.stringValue] else {
             throw DecodingError.keyNotFound(key,
                                             DecodingError.Context(codingPath: decoder.codingPath,
@@ -787,8 +784,8 @@ fileprivate struct _MessagePackKeyedDecodingContainer<K: CodingKey>: KeyedDecodi
         return entry.isNil
     }
     
-    public func decode(_ type: Bool.Type,
-                       forKey key: Key) throws -> Bool {
+    func decode(_ type: Bool.Type,
+                forKey key: Key) throws -> Bool {
         guard let entry = container[key.stringValue] else {
             throw DecodingError.keyNotFound(key,
                                             DecodingError.Context(codingPath: decoder.codingPath,
@@ -807,8 +804,8 @@ fileprivate struct _MessagePackKeyedDecodingContainer<K: CodingKey>: KeyedDecodi
         return value
     }
     
-    public func decode(_ type: Int.Type,
-                       forKey key: Key) throws -> Int {
+    func decode(_ type: Int.Type,
+                forKey key: Key) throws -> Int {
         guard let entry = container[key.stringValue] else {
             throw DecodingError.keyNotFound(key,
                                             DecodingError.Context(codingPath: decoder.codingPath,
@@ -828,8 +825,8 @@ fileprivate struct _MessagePackKeyedDecodingContainer<K: CodingKey>: KeyedDecodi
         return value
     }
     
-    public func decode(_ type: Int8.Type,
-                       forKey key: Key) throws -> Int8 {
+    func decode(_ type: Int8.Type,
+                forKey key: Key) throws -> Int8 {
         guard let entry = container[key.stringValue] else {
             throw DecodingError.keyNotFound(key,
                                             DecodingError.Context(codingPath: decoder.codingPath,
@@ -849,8 +846,8 @@ fileprivate struct _MessagePackKeyedDecodingContainer<K: CodingKey>: KeyedDecodi
         return value
     }
     
-    public func decode(_ type: Int16.Type,
-                       forKey key: Key) throws -> Int16 {
+    func decode(_ type: Int16.Type,
+                forKey key: Key) throws -> Int16 {
         guard let entry = container[key.stringValue] else {
             throw DecodingError.keyNotFound(key,
                                             DecodingError.Context(codingPath: decoder.codingPath,
@@ -868,7 +865,7 @@ fileprivate struct _MessagePackKeyedDecodingContainer<K: CodingKey>: KeyedDecodi
         return value
     }
     
-    public func decode(_ type: Int32.Type,
+    func decode(_ type: Int32.Type,
                        forKey key: Key) throws -> Int32 {
         guard let entry = container[key.stringValue] else {
             throw DecodingError.keyNotFound(key,
@@ -889,8 +886,8 @@ fileprivate struct _MessagePackKeyedDecodingContainer<K: CodingKey>: KeyedDecodi
         return value
     }
     
-    public func decode(_ type: Int64.Type,
-                       forKey key: Key) throws -> Int64 {
+    func decode(_ type: Int64.Type,
+                forKey key: Key) throws -> Int64 {
         guard let entry = container[key.stringValue] else {
             throw DecodingError.keyNotFound(key,
                                             DecodingError.Context(codingPath: decoder.codingPath,
@@ -910,8 +907,8 @@ fileprivate struct _MessagePackKeyedDecodingContainer<K: CodingKey>: KeyedDecodi
         return value
     }
     
-    public func decode(_ type: UInt.Type,
-                       forKey key: Key) throws -> UInt {
+    func decode(_ type: UInt.Type,
+                forKey key: Key) throws -> UInt {
         guard let entry = container[key.stringValue] else {
             throw DecodingError.keyNotFound(key,
                                             DecodingError.Context(codingPath: decoder.codingPath,
@@ -931,8 +928,8 @@ fileprivate struct _MessagePackKeyedDecodingContainer<K: CodingKey>: KeyedDecodi
         return value
     }
     
-    public func decode(_ type: UInt8.Type,
-                       forKey key: Key) throws -> UInt8 {
+    func decode(_ type: UInt8.Type,
+                forKey key: Key) throws -> UInt8 {
         guard let entry = container[key.stringValue] else {
             throw DecodingError.keyNotFound(key,
                                             DecodingError.Context(codingPath: decoder.codingPath,
@@ -952,8 +949,8 @@ fileprivate struct _MessagePackKeyedDecodingContainer<K: CodingKey>: KeyedDecodi
         return value
     }
     
-    public func decode(_ type: UInt16.Type,
-                       forKey key: Key) throws -> UInt16 {
+    func decode(_ type: UInt16.Type,
+                forKey key: Key) throws -> UInt16 {
         guard let entry = container[key.stringValue] else {
             throw DecodingError.keyNotFound(key,
                                             DecodingError.Context(codingPath: decoder.codingPath,
@@ -973,8 +970,8 @@ fileprivate struct _MessagePackKeyedDecodingContainer<K: CodingKey>: KeyedDecodi
         return value
     }
     
-    public func decode(_ type: UInt32.Type,
-                       forKey key: Key) throws -> UInt32 {
+    func decode(_ type: UInt32.Type,
+                forKey key: Key) throws -> UInt32 {
         guard let entry = container[key.stringValue] else {
             throw DecodingError.keyNotFound(key,
                                             DecodingError.Context(codingPath: decoder.codingPath,
@@ -994,8 +991,8 @@ fileprivate struct _MessagePackKeyedDecodingContainer<K: CodingKey>: KeyedDecodi
         return value
     }
     
-    public func decode(_ type: UInt64.Type,
-                       forKey key: Key) throws -> UInt64 {
+    func decode(_ type: UInt64.Type,
+                forKey key: Key) throws -> UInt64 {
         guard let entry = container[key.stringValue] else {
             throw DecodingError.keyNotFound(key,
                                             DecodingError.Context(codingPath: decoder.codingPath,
@@ -1015,8 +1012,8 @@ fileprivate struct _MessagePackKeyedDecodingContainer<K: CodingKey>: KeyedDecodi
         return value
     }
     
-    public func decode(_ type: Float.Type,
-                       forKey key: Key) throws -> Float {
+    func decode(_ type: Float.Type,
+                forKey key: Key) throws -> Float {
         guard let entry = container[key.stringValue] else {
             throw DecodingError.keyNotFound(key,
                                             DecodingError.Context(codingPath: decoder.codingPath,
@@ -1036,8 +1033,8 @@ fileprivate struct _MessagePackKeyedDecodingContainer<K: CodingKey>: KeyedDecodi
         return value
     }
     
-    public func decode(_ type: Double.Type,
-                       forKey key: Key) throws -> Double {
+    func decode(_ type: Double.Type,
+                forKey key: Key) throws -> Double {
         guard let entry = container[key.stringValue] else {
             throw DecodingError.keyNotFound(key,
                                             DecodingError.Context(codingPath: decoder.codingPath,
@@ -1057,8 +1054,8 @@ fileprivate struct _MessagePackKeyedDecodingContainer<K: CodingKey>: KeyedDecodi
         return value
     }
     
-    public func decode(_ type: String.Type,
-                       forKey key: Key) throws -> String {
+    func decode(_ type: String.Type,
+                forKey key: Key) throws -> String {
         guard let entry = container[key.stringValue] else {
             throw DecodingError.keyNotFound(key,
                                             DecodingError.Context(codingPath: decoder.codingPath,
@@ -1078,8 +1075,8 @@ fileprivate struct _MessagePackKeyedDecodingContainer<K: CodingKey>: KeyedDecodi
         return value
     }
     
-    public func decode<T : Decodable>(_ type: T.Type,
-                                      forKey key: Key) throws -> T {
+    func decode<T : Decodable>(_ type: T.Type,
+                               forKey key: Key) throws -> T {
         guard let entry = container[key.stringValue] else {
             throw DecodingError.keyNotFound(key,
                                             DecodingError.Context(codingPath: decoder.codingPath,
@@ -1099,8 +1096,8 @@ fileprivate struct _MessagePackKeyedDecodingContainer<K: CodingKey>: KeyedDecodi
         return value
     }
     
-    public func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type,
-                                           forKey key: Key) throws -> KeyedDecodingContainer<NestedKey> {
+    func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type,
+                                    forKey key: Key) throws -> KeyedDecodingContainer<NestedKey> {
         decoder.codingPath.append(key)
         defer { decoder.codingPath.removeLast() }
         
@@ -1136,7 +1133,7 @@ fileprivate struct _MessagePackKeyedDecodingContainer<K: CodingKey>: KeyedDecodi
         return KeyedDecodingContainer(container)
     }
     
-    public func nestedUnkeyedContainer(forKey key: Key) throws -> UnkeyedDecodingContainer {
+    func nestedUnkeyedContainer(forKey key: Key) throws -> UnkeyedDecodingContainer {
         decoder.codingPath.append(key)
         defer { decoder.codingPath.removeLast() }
         
@@ -1167,11 +1164,11 @@ fileprivate struct _MessagePackKeyedDecodingContainer<K: CodingKey>: KeyedDecodi
                                    options: decoder.options)
     }
     
-    public func superDecoder() throws -> Decoder {
+    func superDecoder() throws -> Decoder {
         return try _superDecoder(forKey: _MessagePackKey.super)
     }
     
-    public func superDecoder(forKey key: Key) throws -> Decoder {
+    func superDecoder(forKey key: Key) throws -> Decoder {
         return try _superDecoder(forKey: key)
     }
 }
@@ -1182,9 +1179,9 @@ fileprivate struct _MessagePackUnkeyedDecodingContainer: UnkeyedDecodingContaine
     
     private let container: [MessagePackValue]
     
-    private(set) public var codingPath: [CodingKey]
+    private(set) var codingPath: [CodingKey]
     
-    private(set) public var currentIndex: Int
+    private(set) var currentIndex: Int
     
     fileprivate init(referencing decoder: _MessagePackDecoder,
                      wrapping container: [MessagePackValue]) {
@@ -1194,11 +1191,11 @@ fileprivate struct _MessagePackUnkeyedDecodingContainer: UnkeyedDecodingContaine
         self.currentIndex = 0
     }
     
-    public var count: Int? {
+    var count: Int? {
         return container.count
     }
     
-    public var isAtEnd: Bool {
+    var isAtEnd: Bool {
         return currentIndex >= count!
     }
     
@@ -1212,7 +1209,7 @@ fileprivate struct _MessagePackUnkeyedDecodingContainer: UnkeyedDecodingContaine
         }
     }
     
-    public mutating func decodeNil() throws -> Bool {
+    mutating func decodeNil() throws -> Bool {
         try expectNotAtEnd(type: Any?.self)
         
         if container[currentIndex].isNil {
@@ -1223,7 +1220,7 @@ fileprivate struct _MessagePackUnkeyedDecodingContainer: UnkeyedDecodingContaine
         }
     }
     
-    public mutating func decode(_ type: Bool.Type) throws -> Bool {
+    mutating func decode(_ type: Bool.Type) throws -> Bool {
         try expectNotAtEnd(type: type)
         
         decoder.codingPath.append(_MessagePackKey(index: currentIndex))
@@ -1239,7 +1236,7 @@ fileprivate struct _MessagePackUnkeyedDecodingContainer: UnkeyedDecodingContaine
         return decoded
     }
     
-    public mutating func decode(_ type: Int.Type) throws -> Int {
+    mutating func decode(_ type: Int.Type) throws -> Int {
         try expectNotAtEnd(type: type)
         
         decoder.codingPath.append(_MessagePackKey(index: currentIndex))
@@ -1256,7 +1253,7 @@ fileprivate struct _MessagePackUnkeyedDecodingContainer: UnkeyedDecodingContaine
         return decoded
     }
     
-    public mutating func decode(_ type: Int8.Type) throws -> Int8 {
+    mutating func decode(_ type: Int8.Type) throws -> Int8 {
         try expectNotAtEnd(type: type)
         
         decoder.codingPath.append(_MessagePackKey(index: currentIndex))
@@ -1273,7 +1270,7 @@ fileprivate struct _MessagePackUnkeyedDecodingContainer: UnkeyedDecodingContaine
         return decoded
     }
     
-    public mutating func decode(_ type: Int16.Type) throws -> Int16 {
+    mutating func decode(_ type: Int16.Type) throws -> Int16 {
         try expectNotAtEnd(type: type)
         
         decoder.codingPath.append(_MessagePackKey(index: currentIndex))
@@ -1290,7 +1287,7 @@ fileprivate struct _MessagePackUnkeyedDecodingContainer: UnkeyedDecodingContaine
         return decoded
     }
     
-    public mutating func decode(_ type: Int32.Type) throws -> Int32 {
+    mutating func decode(_ type: Int32.Type) throws -> Int32 {
         try expectNotAtEnd(type: type)
         
         decoder.codingPath.append(_MessagePackKey(index: currentIndex))
@@ -1307,7 +1304,7 @@ fileprivate struct _MessagePackUnkeyedDecodingContainer: UnkeyedDecodingContaine
         return decoded
     }
     
-    public mutating func decode(_ type: Int64.Type) throws -> Int64 {
+    mutating func decode(_ type: Int64.Type) throws -> Int64 {
         try expectNotAtEnd(type: type)
         
         decoder.codingPath.append(_MessagePackKey(index: currentIndex))
@@ -1324,7 +1321,7 @@ fileprivate struct _MessagePackUnkeyedDecodingContainer: UnkeyedDecodingContaine
         return decoded
     }
     
-    public mutating func decode(_ type: UInt.Type) throws -> UInt {
+    mutating func decode(_ type: UInt.Type) throws -> UInt {
         try expectNotAtEnd(type: type)
         
         decoder.codingPath.append(_MessagePackKey(index: currentIndex))
@@ -1341,7 +1338,7 @@ fileprivate struct _MessagePackUnkeyedDecodingContainer: UnkeyedDecodingContaine
         return decoded
     }
     
-    public mutating func decode(_ type: UInt8.Type) throws -> UInt8 {
+    mutating func decode(_ type: UInt8.Type) throws -> UInt8 {
         try expectNotAtEnd(type: type)
         
         decoder.codingPath.append(_MessagePackKey(index: currentIndex))
@@ -1358,7 +1355,7 @@ fileprivate struct _MessagePackUnkeyedDecodingContainer: UnkeyedDecodingContaine
         return decoded
     }
     
-    public mutating func decode(_ type: UInt16.Type) throws -> UInt16 {
+    mutating func decode(_ type: UInt16.Type) throws -> UInt16 {
         try expectNotAtEnd(type: type)
         
         decoder.codingPath.append(_MessagePackKey(index: currentIndex))
@@ -1375,7 +1372,7 @@ fileprivate struct _MessagePackUnkeyedDecodingContainer: UnkeyedDecodingContaine
         return decoded
     }
     
-    public mutating func decode(_ type: UInt32.Type) throws -> UInt32 {
+    mutating func decode(_ type: UInt32.Type) throws -> UInt32 {
         try expectNotAtEnd(type: type)
         
         decoder.codingPath.append(_MessagePackKey(index: currentIndex))
@@ -1392,7 +1389,7 @@ fileprivate struct _MessagePackUnkeyedDecodingContainer: UnkeyedDecodingContaine
         return decoded
     }
     
-    public mutating func decode(_ type: UInt64.Type) throws -> UInt64 {
+    mutating func decode(_ type: UInt64.Type) throws -> UInt64 {
         try expectNotAtEnd(type: type)
         
         decoder.codingPath.append(_MessagePackKey(index: currentIndex))
@@ -1409,7 +1406,7 @@ fileprivate struct _MessagePackUnkeyedDecodingContainer: UnkeyedDecodingContaine
         return decoded
     }
     
-    public mutating func decode(_ type: Float.Type) throws -> Float {
+    mutating func decode(_ type: Float.Type) throws -> Float {
         try expectNotAtEnd(type: type)
         
         decoder.codingPath.append(_MessagePackKey(index: currentIndex))
@@ -1426,7 +1423,7 @@ fileprivate struct _MessagePackUnkeyedDecodingContainer: UnkeyedDecodingContaine
         return decoded
     }
     
-    public mutating func decode(_ type: Double.Type) throws -> Double {
+    mutating func decode(_ type: Double.Type) throws -> Double {
         try expectNotAtEnd(type: type)
         
         decoder.codingPath.append(_MessagePackKey(index: currentIndex))
@@ -1443,7 +1440,7 @@ fileprivate struct _MessagePackUnkeyedDecodingContainer: UnkeyedDecodingContaine
         return decoded
     }
     
-    public mutating func decode(_ type: String.Type) throws -> String {
+    mutating func decode(_ type: String.Type) throws -> String {
         try expectNotAtEnd(type: type)
         
         decoder.codingPath.append(_MessagePackKey(index: currentIndex))
@@ -1460,7 +1457,7 @@ fileprivate struct _MessagePackUnkeyedDecodingContainer: UnkeyedDecodingContaine
         return decoded
     }
     
-    public mutating func decode<T: Decodable>(_ type: T.Type) throws -> T {
+    mutating func decode<T: Decodable>(_ type: T.Type) throws -> T {
         try expectNotAtEnd(type: type)
         
         decoder.codingPath.append(_MessagePackKey(index: currentIndex))
@@ -1477,7 +1474,7 @@ fileprivate struct _MessagePackUnkeyedDecodingContainer: UnkeyedDecodingContaine
         return decoded
     }
     
-    public mutating func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type) throws -> KeyedDecodingContainer<NestedKey> {
+    mutating func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type) throws -> KeyedDecodingContainer<NestedKey> {
         decoder.codingPath.append(_MessagePackKey(index: currentIndex))
         defer { decoder.codingPath.removeLast() }
         
@@ -1517,7 +1514,7 @@ fileprivate struct _MessagePackUnkeyedDecodingContainer: UnkeyedDecodingContaine
         return KeyedDecodingContainer(container)
     }
     
-    public mutating func nestedUnkeyedContainer() throws -> UnkeyedDecodingContainer {
+    mutating func nestedUnkeyedContainer() throws -> UnkeyedDecodingContainer {
         decoder.codingPath.append(_MessagePackKey(index: currentIndex))
         defer { decoder.codingPath.removeLast() }
         
@@ -1543,7 +1540,7 @@ fileprivate struct _MessagePackUnkeyedDecodingContainer: UnkeyedDecodingContaine
         return _MessagePackUnkeyedDecodingContainer(referencing: decoder, wrapping: array)
     }
     
-    public mutating func superDecoder() throws -> Decoder {
+    mutating func superDecoder() throws -> Decoder {
         decoder.codingPath.append(_MessagePackKey(index: currentIndex))
         defer { decoder.codingPath.removeLast() }
         
@@ -1561,67 +1558,67 @@ fileprivate struct _MessagePackUnkeyedDecodingContainer: UnkeyedDecodingContaine
 
 extension _MessagePackDecoder : SingleValueDecodingContainer {
     
-    public func decodeNil() -> Bool {
+    func decodeNil() -> Bool {
         storage.topContainer.isNil
     }
     
-    public func decode(_ type: Bool.Type) throws -> Bool {
+    func decode(_ type: Bool.Type) throws -> Bool {
         try unbox(storage.topContainer, as: Bool.self)!
     }
     
-    public func decode(_ type: Int.Type) throws -> Int {
+    func decode(_ type: Int.Type) throws -> Int {
         try unbox(storage.topContainer, as: Int.self)!
     }
     
-    public func decode(_ type: Int8.Type) throws -> Int8 {
+    func decode(_ type: Int8.Type) throws -> Int8 {
         try unbox(storage.topContainer, as: Int8.self)!
     }
     
-    public func decode(_ type: Int16.Type) throws -> Int16 {
+    func decode(_ type: Int16.Type) throws -> Int16 {
         try unbox(storage.topContainer, as: Int16.self)!
     }
     
-    public func decode(_ type: Int32.Type) throws -> Int32 {
+    func decode(_ type: Int32.Type) throws -> Int32 {
         try unbox(storage.topContainer, as: Int32.self)!
     }
     
-    public func decode(_ type: Int64.Type) throws -> Int64 {
+    func decode(_ type: Int64.Type) throws -> Int64 {
         try unbox(storage.topContainer, as: Int64.self)!
     }
     
-    public func decode(_ type: UInt.Type) throws -> UInt {
+    func decode(_ type: UInt.Type) throws -> UInt {
         try unbox(storage.topContainer, as: UInt.self)!
     }
     
-    public func decode(_ type: UInt8.Type) throws -> UInt8 {
+    func decode(_ type: UInt8.Type) throws -> UInt8 {
         try unbox(storage.topContainer, as: UInt8.self)!
     }
     
-    public func decode(_ type: UInt16.Type) throws -> UInt16 {
+    func decode(_ type: UInt16.Type) throws -> UInt16 {
         try unbox(storage.topContainer, as: UInt16.self)!
     }
     
-    public func decode(_ type: UInt32.Type) throws -> UInt32 {
+    func decode(_ type: UInt32.Type) throws -> UInt32 {
         try unbox(storage.topContainer, as: UInt32.self)!
     }
     
-    public func decode(_ type: UInt64.Type) throws -> UInt64 {
+    func decode(_ type: UInt64.Type) throws -> UInt64 {
         try unbox(storage.topContainer, as: UInt64.self)!
     }
     
-    public func decode(_ type: Float.Type) throws -> Float {
+    func decode(_ type: Float.Type) throws -> Float {
         try unbox(storage.topContainer, as: Float.self)!
     }
     
-    public func decode(_ type: Double.Type) throws -> Double {
+    func decode(_ type: Double.Type) throws -> Double {
         try unbox(storage.topContainer, as: Double.self)!
     }
     
-    public func decode(_ type: String.Type) throws -> String {
+    func decode(_ type: String.Type) throws -> String {
         try unbox(storage.topContainer, as: String.self)!
     }
     
-    public func decode<T : Decodable>(_ type: T.Type) throws -> T {
+    func decode<T : Decodable>(_ type: T.Type) throws -> T {
         try unbox(storage.topContainer, as: T.self)!
     }
 }
@@ -1784,15 +1781,15 @@ extension _MessagePackDecoder {
 // MARK: - Shared Key Types
 
 fileprivate struct _MessagePackKey: CodingKey {
-    public var stringValue: String
-    public var intValue: Int?
+    var stringValue: String
+    var intValue: Int?
     
-    public init?(stringValue: String) {
+    init?(stringValue: String) {
         self.stringValue = stringValue
         self.intValue = nil
     }
     
-    public init?(intValue: Int) {
+    init?(intValue: Int) {
         self.stringValue = "\(intValue)"
         self.intValue = intValue
     }
