@@ -5,7 +5,7 @@ import PackageDescription
 let package = Package(
     name: "MessagePack",
     platforms: [
-        .macOS(.v10_15),
+        .macOS(.v10_14),
         .iOS(.v12),
         .watchOS(.v6),
     ],
