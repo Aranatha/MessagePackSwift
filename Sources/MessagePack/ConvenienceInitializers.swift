@@ -40,4 +40,8 @@ extension MessagePackValue {
     public init(_ value: Data) {
         self = .binary(value)
     }
+    
+    public init(_ value: Date) {
+        self = .timestamp(value)
+    }
 }

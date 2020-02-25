@@ -214,7 +214,7 @@ public func unpack(_ data: Subdata,
     case 0xc7 ... 0xc9:
         let intCount = 1 << Int(value - 0xc7)
 
-        let unpacked1 = try unpackInteger(data,
+        let unpacked1 = try unpackInteger(data, //length
                                           count: intCount)
         guard !unpacked1.remainder.isEmpty else {
             throw MessagePackError.insufficientData
@@ -223,8 +223,20 @@ public func unpack(_ data: Subdata,
         let type = Int8(bitPattern: unpacked1.remainder[0])
         let unpacked2 = try unpackData(unpacked1.remainder[1 ..< unpacked1.remainder.count],
                                        count: Int(unpacked1.value))
-        return Unpacked(value: .extended(type, unpacked2.value.data),
-                        remainder: unpacked2.remainder)
+        
+        if (type == kTimestampType){
+            guard let date = dataToDate(unpacked2.value.data) else {
+                throw MessagePackError.invalidData
+            }
+            return Unpacked(value: .timestamp(date),
+            remainder: unpacked2.remainder)
+        } else {
+            return Unpacked(value: .extended(type, unpacked2.value.data),
+            remainder: unpacked2.remainder)
+        }
+        
+       // return Unpacked(value: .extended(type, unpacked2.value.data),
+       //                 remainder: unpacked2.remainder)
 
     // float 32
     case 0xca:
@@ -295,8 +307,19 @@ public func unpack(_ data: Subdata,
         let type = Int8(bitPattern: data[0])
         let subdata = try unpackData(data[1 ..< data.count],
                                      count: count)
-        return Unpacked(value: .extended(type, subdata.value.data),
-                        remainder: subdata.remainder)
+        
+        
+        if (type == kTimestampType){
+            guard let date = dataToDate(subdata.value.data) else {
+                throw MessagePackError.invalidData
+            }
+            return Unpacked(value: .timestamp(date),
+                            remainder: subdata.remainder)
+        } else {
+            return Unpacked(value: .extended(type, subdata.value.data),
+                            remainder: subdata.remainder)
+        }
+        
 
     // str 8, 16, 32
     case 0xd9 ... 0xdb:
@@ -396,4 +419,83 @@ public func unpackAll(_ data: Data,
     }
 
     return values
+}
+
+func dataToDate(_ bytes: Data) -> Date? {
+
+    let secs_to_nanosecs = 1000000000.0
+
+    enum timestamp : Int {
+        case ts32bit = 4 // 32 bit unsigned seconds since 1970-01-01 00:00:00 UTC
+        case ts64bit = 8 //34 bit unsigned seconds since 1970-01-01 00:00:00 UTC, 30 bit unsigned nanosecs
+        case ts96bit = 12 //64 bit signed seconds since 1970-01-01 00:00:00 UTC, 32 bit unsigned nanosecs
+    }
+    
+    guard let ts = timestamp.init(rawValue: bytes.count) else {
+        return nil
+    }
+    
+    switch ts {
+    case .ts32bit:
+        let timeinterval = UnsafeMutablePointer<UInt32>.allocate(capacity: 1)
+        timeinterval.pointee = 0
+        let rawdata = Foundation.Data(bytes: bytes.reversed(), count: MemoryLayout<UInt32>.size) // reverse deals with little/big Endian
+        timeinterval.withMemoryRebound(to: UInt8.self, capacity: MemoryLayout<UInt32>.size, {ptr in
+            rawdata.copyBytes(to: ptr, count: MemoryLayout<UInt32>.size)
+        })
+  
+//        rawdata.copyBytes(to: UnsafeMutablePointer<UInt8>(timeinterval), count: MemoryLayout<UInt32>.size)
+        //rawdata.getBytes(&timeinterval, length: sizeof(UInt32))
+        let date = Date(timeIntervalSince1970: Double(timeinterval.pointee))
+        timeinterval.deinitialize(count: 1)
+        return date
+    case .ts64bit:
+        let data = UnsafeMutablePointer<UInt64>.allocate(capacity: 1)
+        data.pointee = 0
+        let rawdata = Foundation.Data(bytes: bytes.reversed(), count: MemoryLayout<UInt64>.size) // reverse deals with little/big Endian
+        data.withMemoryRebound(to: UInt8.self, capacity: MemoryLayout<UInt64>.size, {ptr in
+            rawdata.copyBytes(to: ptr, count: MemoryLayout<UInt64>.size)
+        })
+
+       // rawdata.copyBytes(to: UnsafeMutablePointer<UInt8>(data), count: MemoryLayout<UInt64>.size)
+
+        let seconds = Double(UInt64(0x3ffffffff) & data.pointee)
+        let nanos = Double(data.pointee >> 34)
+        let timeinterval = seconds + nanos / secs_to_nanosecs
+        let date = Date(timeIntervalSince1970: timeinterval)
+        data.deinitialize(count: 1)
+
+        return date
+    case .ts96bit:
+        let nanos = UnsafeMutablePointer<UInt32>.allocate(capacity: 1)
+        nanos.pointee = 0
+        let seconds = UnsafeMutablePointer<Int64>.allocate(capacity: 1)
+        seconds.pointee = 0
+        let rawdata = Foundation.Data(bytes: bytes.reversed(), count: MemoryLayout<UInt32>.size+MemoryLayout<Int64>.size) // reverse deals with little/big Endian
+        
+        seconds.withMemoryRebound(to: UInt8.self, capacity: MemoryLayout<Int64>.size, {ptr in
+            rawdata.copyBytes(to: ptr, count: MemoryLayout<Int64>.size)
+        })
+
+
+        //rawdata.copyBytes(to: UnsafeMutablePointer<UInt8>(seconds), count: MemoryLayout<Int64>.size)
+        
+        let range = Range<Int>.init(uncheckedBounds: (MemoryLayout<Int64>.size, MemoryLayout<Int64>.size + MemoryLayout<UInt32>.size))
+
+        nanos.withMemoryRebound(to: UInt8.self, capacity: MemoryLayout<UInt32>.size, {ptr in
+            rawdata.copyBytes(to: ptr, from: range)
+        })
+//        rawdata.copyBytes(to: UnsafeMutablePointer<UInt8>(nanos), from: range)
+
+        
+        //rawdata.getBytes(&seconds, range: NSRange(location: 0, length: sizeof(Int64)))
+        //rawdata.getBytes(&nanos, range: NSRange(location: sizeof(Int64), length: sizeof(UInt32)))
+        let timeinterval = Double(seconds.pointee) + Double(nanos.pointee) / secs_to_nanosecs
+        let date = Date(timeIntervalSince1970: timeinterval)
+        seconds.deinitialize(count: 1)
+        nanos.deinitialize(count: 1)
+
+        return date
+    }
+
 }

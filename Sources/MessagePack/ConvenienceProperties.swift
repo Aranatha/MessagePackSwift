@@ -253,6 +253,16 @@ extension MessagePackValue {
             throw MessagePackError.unsupportedType
         }
     }
+    
+    /// The contained timestamp as Date
+    public var timestampValue: Date? {
+        switch self {
+        case let .timestamp(date):
+            return date
+        default:
+            return nil
+        }
+    }
 
     /// The contained type and data if Extended, `nil` otherwise.
     public func extendedValue() throws -> (Int8, Data) {

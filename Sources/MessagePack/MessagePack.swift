@@ -13,6 +13,7 @@ public enum MessagePackValue {
     case array([MessagePackValue])
     case map([MessagePackValue: MessagePackValue])
     case extended(Int8, Data)
+    case timestamp(Date) // subtype -1 of Extended
 }
 
 extension MessagePackValue: CustomStringConvertible {
@@ -40,6 +41,8 @@ extension MessagePackValue: CustomStringConvertible {
             return "map(\(dict.description))"
         case .extended(let type, let data):
             return "extended(\(type), \(data))"
+        case .timestamp(let date):
+            return "date(\(date))"
         }
     }
 }
@@ -73,6 +76,8 @@ extension MessagePackValue: Equatable {
             return lhv == rhv
         case (.extended(let lht, let lhb), .extended(let rht, let rhb)):
             return lht == rht && lhb == rhb
+        case (.timestamp(let lhts), .timestamp(let rhts)):
+            return lhts == rhts
         default:
             return false
         }
@@ -106,6 +111,8 @@ extension MessagePackValue: Hashable {
             hasher.combine(31)
             hasher.combine(type)
             hasher.combine(data)
+        case .timestamp(let date):
+            hasher.combine(date)
         }
     }
 }
@@ -117,3 +124,5 @@ public enum MessagePackError: Error {
     case unsupportedType
     case inexact
 }
+
+let kTimestampType = Int8(-1)

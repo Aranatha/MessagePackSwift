@@ -187,5 +187,61 @@ public func pack(_ value: MessagePackValue) -> Data {
         }
 
         return prefix + data
+        
+        case let .timestamp(date):
+            let timestampData = dateToData(date)
+            precondition(timestampData.count >= 4 && timestampData.count <= 12)
+            return pack(.extended(kTimestampType, timestampData))
+        }
+}
+
+func dateToData(_ date: Date) -> Data {
+    enum timestamp{
+        case ts32bit(secs: UInt32) // 32 bit unsigned seconds since 1970-01-01 00:00:00 UTC
+        case ts64bit(secs: UInt64, nanos: UInt32) //34 bit unsigned seconds since 1970-01-01 00:00:00 UTC, 30 bit unsigned nanosecs
+        case ts96bit(secs:  Int64, nanos: UInt32) //64 bit signed seconds since 1970-01-01 00:00:00 UTC, 32 bit unsigned nanosecs
+        case undefined
+    }
+    
+    let secs_to_nanosecs = 1000000000.0
+    let seconds32max = Int64(UInt32.max)
+    let seconds34max = Int64(UInt32.max) * 4
+    let seconds64max = Int64.max
+    let seconds64min = Int64.min
+
+    let nanomax = UInt32(999999999)
+    
+    let timeinterval = date.timeIntervalSince1970
+    let seconds  = Int64(timeinterval)
+    let nanos = UInt32(abs((timeinterval - Double(seconds)) * secs_to_nanosecs))
+    
+    let ts : timestamp
+    
+    switch (seconds, nanos){
+    case(0...seconds32max, 0): //t32
+        let castSeconds = UInt32(seconds.description)!
+        ts = timestamp.ts32bit(secs: UInt32(castSeconds))
+    case (0..<seconds34max, 0...nanomax): //t64
+        let castSeconds = UInt64(0x3FFFFFFFF) & numericCast(seconds)
+        let castNanos = UInt32(0x3FFFFFFF) & numericCast(nanos)
+        ts = timestamp.ts64bit(secs: castSeconds, nanos: castNanos)
+    case (seconds64min..<seconds64max, 0...nanomax): //t96
+        ts = timestamp.ts96bit(secs: Int64(seconds), nanos: UInt32(nanos))
+    default:
+        ts = timestamp.undefined
+    }
+    
+    switch ts {
+    case .ts32bit(let secs):
+        let data = packInteger(numericCast(secs), parts: 4)
+        return data
+    case .ts64bit(let secs, let nanos):
+        return packInteger((UInt64(nanos) << 34) | secs, parts: 8)
+    case .ts96bit(let secs, let nanos):
+        let data1 = packInteger(numericCast(nanos), parts: 4)
+        let data2 = packInteger(numericCast(UInt64(bitPattern: secs)), parts: 8)
+        return  data1 + data2
+    case .undefined:
+        return Data()
     }
 }
