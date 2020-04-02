@@ -1,8 +1,8 @@
 import Foundation
 
 public struct Unpacked<ValueType, DataType> {
-    let value: ValueType
-    let remainder: DataType
+    public let value: ValueType
+    public let remainder: DataType
 }
 
 /// Joins bytes to form an integer.
