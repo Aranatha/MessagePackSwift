@@ -10,14 +10,14 @@ public struct Subdata: RandomAccessCollection {
     public init(data: Data,
                 startIndex: Int = 0) {
         self.init(data: data,
-                  startIndex: startIndex,
-                  endIndex: data.endIndex)
+				  startIndex: startIndex,
+                  endIndex: data.count)
     }
 
     public init(data: Data,
                 startIndex: Int,
                 endIndex: Int) {
-		self.slice = data[startIndex ..< endIndex]
+		self.slice = data[data.startIndex + startIndex ..< data.startIndex + endIndex]
     }
 
     public init(slice: Slice<Data>,
