@@ -52,4 +52,9 @@ class ExampleTests: XCTestCase {
             XCTAssertEqual(error as? MessagePackError, .insufficientData)
         }
     }
+
+	func testUnpackSomeCrashingThing() throws {
+		let data = Data([130, 2, 130, 3, 9, 2, 8, 1, 129, 1, 182, 67, 101, 99, 105, 32, 101, 115, 116, 32, 117, 110, 32, 99, 111, 117, 114, 116, 32, 116, 101, 115, 116])
+		_ = try unpack(data)
+	}
 }

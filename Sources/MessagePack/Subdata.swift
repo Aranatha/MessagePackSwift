@@ -1,9 +1,11 @@
 import Foundation
 
 public struct Subdata: RandomAccessCollection {
-    let base: Data
-    let baseStartIndex: Int
-    let baseEndIndex: Int
+	let slice: Slice<Data>
+
+//	var base: Data { Data(slice) }
+//	var baseStartIndex: Int { 0 }
+//	var baseEndIndex: Int { slice.count }
 
     public init(data: Data,
                 startIndex: Int = 0) {
@@ -15,9 +17,13 @@ public struct Subdata: RandomAccessCollection {
     public init(data: Data,
                 startIndex: Int,
                 endIndex: Int) {
-        self.base = data
-        self.baseStartIndex = startIndex
-        self.baseEndIndex = endIndex
+		self.slice = data[startIndex ..< endIndex]
+    }
+
+    public init(slice: Slice<Data>,
+                startIndex: Int,
+                endIndex: Int) {
+		self.slice = slice[startIndex ..< endIndex]
     }
 
     public var startIndex: Int {
@@ -25,7 +31,7 @@ public struct Subdata: RandomAccessCollection {
     }
 
     public var endIndex: Int {
-        baseEndIndex - baseStartIndex
+		slice.endIndex - slice.startIndex
     }
 
     public var count: Int {
@@ -33,11 +39,11 @@ public struct Subdata: RandomAccessCollection {
     }
 
     public var isEmpty: Bool {
-        baseStartIndex == baseEndIndex
+		slice.startIndex == slice.endIndex
     }
 
     public subscript(index: Int) -> UInt8 {
-        base[baseStartIndex + index]
+		slice[slice.startIndex + index]
     }
 
     public func index(before i: Int) -> Int {
@@ -49,13 +55,13 @@ public struct Subdata: RandomAccessCollection {
     }
 
     public subscript(bounds: Range<Int>) -> Subdata {
-        precondition(baseStartIndex + bounds.upperBound <= baseEndIndex)
-        return Subdata(data: base,
-                       startIndex: baseStartIndex + bounds.lowerBound,
-                       endIndex: baseStartIndex + bounds.upperBound)
+		precondition(slice.startIndex + bounds.upperBound <= slice.endIndex)
+        return Subdata(slice: slice,
+					   startIndex: slice.startIndex + bounds.lowerBound,
+					   endIndex: slice.startIndex + bounds.upperBound)
     }
 
     public var data: Data {
-        base.subdata(in: baseStartIndex ..< baseEndIndex)
+        Data(slice)
     }
 }
