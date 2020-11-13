@@ -62,12 +62,18 @@ private func packNegativeInteger(_ value: Int64) -> Data {
     }
 }
 
+/// Format to use for packing. Old format encodes binary as invalid utf-8 strings and must be decoded in compatibility mode.
+public enum PackFormat {
+    case latest
+    case old
+}
+
 /// Packs a MessagePackValue into an array of bytes.
 ///
 /// - parameter value: The value to encode
 ///
 /// - returns: A MessagePack byte representation.
-public func pack(_ value: MessagePackValue) -> Data {
+public func pack(_ value: MessagePackValue, format: PackFormat) -> Data {
     switch value {
     case .nil:
         return Data([0xc0])
@@ -114,12 +120,25 @@ public func pack(_ value: MessagePackValue) -> Data {
         assert(count <= 0xffff_ffff as UInt32)
 
         let prefix: Data
-        if count <= 0xff {
-            prefix = Data([0xc4, UInt8(count)])
-        } else if count <= 0xffff {
-            prefix = Data([0xc5]) + packInteger(UInt64(count), parts: 2)
-        } else {
-            prefix = Data([0xc6]) + packInteger(UInt64(count), parts: 4)
+        switch format {
+        case .latest:
+            if count <= 0xff {
+                prefix = Data([0xc4, UInt8(count)])
+            } else if count <= 0xffff {
+                prefix = Data([0xc5]) + packInteger(UInt64(count), parts: 2)
+            } else {
+                prefix = Data([0xc6]) + packInteger(UInt64(count), parts: 4)
+            }
+        case .old: // same prefix as strings above
+            if count <= 0x19 {
+                prefix = Data([0xa0 | UInt8(count)])
+            } else if count <= 0xff {
+                prefix = Data([0xd9, UInt8(count)])
+            } else if count <= 0xffff {
+                prefix = Data([0xda]) + packInteger(UInt64(count), parts: 2)
+            } else {
+                prefix = Data([0xdb]) + packInteger(UInt64(count), parts: 4)
+            }
         }
 
         return prefix + data
@@ -137,7 +156,7 @@ public func pack(_ value: MessagePackValue) -> Data {
             prefix = Data([0xdd]) + packInteger(UInt64(count), parts: 4)
         }
 
-        return prefix + array.flatMap(pack)
+        return prefix + array.flatMap { pack($0, format: format) }
 
     case .map(let dict):
         let count = UInt32(dict.count)
@@ -155,8 +174,8 @@ public func pack(_ value: MessagePackValue) -> Data {
         }
 
         for (key, value) in dict {
-            data.append(pack(key))
-            data.append(pack(value))
+            data.append(pack(key, format: format))
+            data.append(pack(value, format: format))
         }
 
         return data
@@ -191,7 +210,7 @@ public func pack(_ value: MessagePackValue) -> Data {
         case let .timestamp(date):
             let timestampData = dateToData(date)
             precondition(timestampData.count >= 4 && timestampData.count <= 12)
-            return pack(.extended(kTimestampType, timestampData))
+            return pack(.extended(kTimestampType, timestampData), format: format)
         }
 }
 
