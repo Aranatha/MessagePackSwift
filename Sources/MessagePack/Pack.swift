@@ -73,7 +73,7 @@ public enum PackFormat {
 /// - parameter value: The value to encode
 ///
 /// - returns: A MessagePack byte representation.
-public func pack(_ value: MessagePackValue, format: PackFormat) -> Data {
+public func pack(_ value: MessagePackValue, format: PackFormat = .latest) -> Data {
     switch value {
     case .nil:
         return Data([0xc0])
