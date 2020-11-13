@@ -105,7 +105,7 @@ public func pack(_ value: MessagePackValue, format: PackFormat = .latest) -> Dat
         let prefix: Data
         if count <= 0x19 {
             prefix = Data([0xa0 | UInt8(count)])
-        } else if count <= 0xff {
+        } else if count <= 0xff && format != .old {
             prefix = Data([0xd9, UInt8(count)])
         } else if count <= 0xffff {
             prefix = Data([0xda]) + packInteger(UInt64(count), parts: 2)
@@ -132,8 +132,6 @@ public func pack(_ value: MessagePackValue, format: PackFormat = .latest) -> Dat
         case .old: // same prefix as strings above
             if count <= 0x19 {
                 prefix = Data([0xa0 | UInt8(count)])
-            } else if count <= 0xff {
-                prefix = Data([0xd9, UInt8(count)])
             } else if count <= 0xffff {
                 prefix = Data([0xda]) + packInteger(UInt64(count), parts: 2)
             } else {
