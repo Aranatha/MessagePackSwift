@@ -17,7 +17,7 @@ public struct Subdata: RandomAccessCollection {
     public init(data: Data,
                 startIndex: Int,
                 endIndex: Int) {
-		self.slice = data[data.startIndex + startIndex ..< data.startIndex + endIndex]
+		self.slice = Slice(base: data, bounds: data.startIndex + startIndex ..< data.startIndex + endIndex)
     }
 
     public init(slice: Slice<Data>,
